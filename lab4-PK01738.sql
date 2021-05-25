@@ -47,23 +47,79 @@ exec sp_thoiGianConvert
 go
 
 --➢4 Cho biết họ tên nhân viên (HONV, TENLOT, TENNV) có mức lương trên mức lương trung bình (làm tròn đến 2 số thập phân) của phòng "Nghiên cứu"
+create proc sp_nvTrenLuongphg @tenPhg nvarchar(50)
+as
+select concat(HONV,' ',TENLOT,' ',TENNV) as Hoten,luong from NHANVIEN 
+where luong > (select avg(luong) from NHANVIEN where PHG in (select MAPHG from PHONGBAN where TENPHG like @tenPhg))
+
+exec sp_nvTrenLuongphg N'nghiên cứu'
+go
 
 --➢5 Danh sách những nhân viên (HONV, TENLOT, TENNV, DCHI) có trên 2 thân nhân, thỏa các yêu cầu 
 --o Dữ liệu cột HONV được viết in hoa toàn bộ 
 --o Dữ liệu cột TENLOT được viết chữ thường toàn bộ 
 --o Dữ liệu chột TENNV có ký tự thứ 2 được viết in hoa, các ký tự còn lại viết thường( ví dụ: kHanh) 
 --o Dữ liệu cột DCHI chỉ hiển thị phần tên đường, không hiển thị các thông tin khác như số nhà hay thành phố.
+create proc sp_NvCoHon2tn
+as
+select UPPER(HONV) as Ho,lower(TENLOT) as TenDem,
+(lower(LEFT(TENNV,1)) + 
+upper(SUBSTRING(TENNV,2,1))+
+lower(SUBSTRING(TENNV,3,len(TENNV)))) as Ten,
+SUBSTRING(Dchi,CHARINDEX(' ',DCHI)+1,CHARINDEX(',',dchi)-1- CHARINDEX(' ',DCHI) ) as Dchi,
+count(*) as N'Số thân nhân' from NHANVIEN as nv
+join THANNHAN as tn on nv.MANV=tn.MA_NVIEN
+group by tn.MA_NVIEN,HONV,TENLOT,TENNV,Dchi having count(*)>=2
+
+exec sp_NvCoHon2tn
+go
 
 --➢6 Cho biết tên phòng ban và họ tên trưởng phòng của phòng ban có đông nhân viên nhất, 
 --hiển thị thêm một cột thay thế tên trưởng phòng bằng tên “Fpoly” 
+create proc sp_PBDongNhat
+as
+select top 1 pb.TENPHG,concat(b.HONV,' ',b.TENLOT,' ',b.TENNV) as HoTen,
+concat(b.HONV,' ',b.TENLOT,' ','Fpoly') as Hoten2 ,count(a.MANV) slnv from NHANVIEN a 
+join PHONGBAN pb on a.PHG=pb.MAPHG 
+join NHANVIEN b on b.MANV=pb.TRPHG
+group by TENPHG,b.TENNV,b.HONV,b.TENLOT
+order by slnv desc
+
+exec sp_PBDongNhat
+go
 
 --➢7 Cho biết các nhân viên có năm sinh trong khoảng 1960 đến 1965. 
+create proc sp_NamSinh @tu int =1960,@den int =1965
+as
+select concat(HONV,' ',TENLOT,' ',TENNV) as Hoten,year(ngsinh) as NamSinh from NHANVIEN where year(NGSINH)>=@tu and year(NGSINH)<=@den
+
+exec sp_NamSinh 1960,1970
+go
 
 --➢8 Cho biết tuổi của các nhân viên tính đến thời điểm hiện tại. 
+create proc sp_Tuoinv
+as
+select concat(HONV,' ',TENLOT,' ',TENNV) as Hoten,DATEDIFF(YEAR,NGSINH,getdate()+1) as Tuoi from NHANVIEN
+
+exec sp_Tuoinv
+go
 
 --➢9 Dựa vào dữ liệu NGSINH, cho biết nhân viên sinh vào thứ mấy. 
+create proc sp_SinhVaoThu
+as
+select concat(HONV,' ',TENLOT,' ',TENNV) as Hoten,Datename(WEEKDAY,NGSINH) as Thu from NHANVIEN
+
+exec sp_SinhVaoThu
+go
 
 --➢10 Cho biết số lượng nhân viên, tên trưởng phòng, ngày nhận chức trưởng phòng 
 --và ngày nhận chức trưởng phòng hiển thi theo định dạng dd-mm-yy (ví dụ 25-04-2019) 
+create proc sp_trgNv
+as
+select pb.TENPHG,concat(HONV,' ',TENLOT,' ',TENNV) TenTruongPhong,b.sl slnv,convert(varchar,pb.NG_NHANCHUC,105) 'dd-mm-yy' from Phongban pb 
+join (select phg,count(*) sl from NHANVIEN group by phg) b on pb.MAPHG= b.PHG
+join NHANVIEN nv on pb.TRPHG=nv.MANV
 
+exec sp_trgNv
+go
 
