@@ -66,7 +66,7 @@ select UPPER(HONV) as Ho,lower(TENLOT) as TenDem,
 (lower(LEFT(TENNV,1)) + 
 upper(SUBSTRING(TENNV,2,1))+
 lower(SUBSTRING(TENNV,3,len(TENNV)))) as Ten,
-SUBSTRING(Dchi,CHARINDEX(' ',DCHI)+1,CHARINDEX(',',dchi)-1- CHARINDEX(' ',DCHI) ) as Dchi,
+SUBSTRING(Dchi,CHARINDEX(' ',DCHI),CHARINDEX(',',dchi)- CHARINDEX(' ',DCHI) ) as Dchi,
 count(*) as N'Số thân nhân' from NHANVIEN as nv
 join THANNHAN as tn on nv.MANV=tn.MA_NVIEN
 group by tn.MA_NVIEN,HONV,TENLOT,TENNV,Dchi having count(*)>=2
