@@ -55,6 +55,10 @@ where luong > (select avg(luong) from NHANVIEN where PHG in (select MAPHG from P
 exec sp_nvTrenLuongphg N'nghiên cứu'
 go
 
+
+select TENNV from NHANVIEN nv join PHONGBAN pb on nv.MANV=pb.MAPHG where luong > (select avg(Luong) from NHANVIEN where phg in(select MAPHG from PHONGBAN where TENPHG like N'Nghiên Cứu'))
+
+
 --➢5 Danh sách những nhân viên (HONV, TENLOT, TENNV, DCHI) có trên 2 thân nhân, thỏa các yêu cầu 
 --o Dữ liệu cột HONV được viết in hoa toàn bộ 
 --o Dữ liệu cột TENLOT được viết chữ thường toàn bộ 
@@ -87,6 +91,9 @@ order by slnv desc
 
 exec sp_PBDongNhat
 go
+
+
+
 
 --➢7 Cho biết các nhân viên có năm sinh trong khoảng 1960 đến 1965. 
 create proc sp_NamSinh @tu int =1960,@den int =1965
