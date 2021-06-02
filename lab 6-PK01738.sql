@@ -3,10 +3,10 @@ go
 
 --➢1 Ràng buộc khi thêm mới nhân viên thì mức lương phải lớn hơn 15000,
 --nếu vi phạm thì xuất thông báo “luong phải >15000’ 
-create trigger them_nv15000 on Nhanvien for insert as
-if (select luong from inserted)<15000
+create trigger them_nv40000 on Nhanvien for insert as
+if (select luong from inserted)<40000
 begin
-	print N'Lương phải lớn hơn 15000'
+	print N'Lương phải lớn hơn 40000'
 	rollback transaction
 end
 
@@ -14,11 +14,11 @@ insert into NHANVIEN values('nguyen','van','cong','111','1996-03-03','bmt','nam'
 
 --➢2 Ràng buộc khi thêm mới nhân viên thì độ tuổi phải nằm trong khoảng 18 <= tuổi <=65. 
 go
-create trigger check_tuoi on Nhanvien for insert as
-if (select year(getdate())-year(ngSinh) from inserted)>65 or 
+alter trigger check_tuoi on Nhanvien for insert as
+if (select year(getdate())-year(ngSinh) from inserted)>55 or 
 (select year(getdate())-year(ngSinh) from inserted)<18
 begin
-	print N'Tuổi phải trong khoảng từ 18-65'
+	print N'Tuổi phải trong khoảng từ 18-55'
 	rollback transaction
 end
 
@@ -93,3 +93,12 @@ begin
 end
 
 insert into NHANVIEN values('nguyen','van','cong','155','1997-03-03','bmt','nam',16000,'005',4)
+
+
+go
+create trigger tb_test on nhanvien after delete as
+begin
+	delete from THANNHAN where MA_NVIEN = (select manv from deleted)
+	delete from NHANVIEN where manv = (select manv from deleted)
+end
+delete from NHANVIEN where MANV like '154'
