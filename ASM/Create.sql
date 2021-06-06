@@ -1,3 +1,4 @@
+create database QLNHATRO_PK01738
 use [QLNHATRO_PK01738]
 go
 
@@ -35,7 +36,7 @@ create table Nguoi_Dung(
 	gioiTinh bit not null,
 	email varchar(50) not null unique,
 	sdtNgDung char(10) not null unique,
-	ngSinh date not null,
+	ngSinh date not null check (year(ngSinh)<year(getdate())),
 	idXaPhuong varchar(5) not null foreign key references XA_PHUONG,
 	diaChi nvarchar(100),
 	idAnh nvarchar(150) not null unique
@@ -80,7 +81,7 @@ create table Nha_Tro(
 	gia float not null,
 	idXaPhuong varchar(5) not null foreign key references Xa_Phuong,
 	diaChi nvarchar(150) not null,
-	ngayDangTin date not null,
+	ngayDangTin date not null check (ngayDangTin <= getdate()),
 	tinhTrang bit not null,
 	sdtTro char(10) not null,
 	moTa nvarchar(200)
@@ -116,17 +117,17 @@ create table Danh_Gia (
 	ipAddress varchar(50) not null
 )
 
-drop table Danh_Gia
-drop table CT_Tien_Nghi
-drop table Tien_Nghi
-drop table Hinh_Tro
-drop table Nha_Tro
-drop table HinhThucThue
-drop table Loai_Nha
-drop table QL_GoiDang
-drop table Goi_DangTin
-drop table Nguoi_Dung
-drop table Loai_NgDung
-drop table Xa_Phuong
-drop table Quan_Huyen
-drop table Tinh
+--drop table Danh_Gia
+--drop table CT_Tien_Nghi
+--drop table Tien_Nghi
+--drop table Hinh_Tro
+--drop table Nha_Tro
+--drop table HinhThucThue
+--drop table Loai_Nha
+--drop table QL_GoiDang
+--drop table Goi_DangTin
+--drop table Nguoi_Dung
+--drop table Loai_NgDung
+--drop table Xa_Phuong
+--drop table Quan_Huyen
+--drop table Tinh

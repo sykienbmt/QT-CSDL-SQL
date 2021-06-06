@@ -16,7 +16,7 @@ USE [QLNHATRO_PK01738]
 GO
 
 --SP thứ nhất thực hiện chèn dữ liệu vào bảng NGUOIDUNG 
-alter proc sp_Them_NgDung (@tenNgDung nvarchar(50),@idLoaiNgDung varchar(10),@gioiTinh bit,@email varchar(50)
+create proc sp_Them_NgDung (@tenNgDung nvarchar(50),@idLoaiNgDung varchar(10),@gioiTinh bit,@email varchar(50)
            ,@sdtNgDung char(10),@ngSinh date,@idXaPhuong varchar(5),@diaChi nvarchar(100),@idAnh nvarchar(150))
 as 
 begin 
@@ -39,8 +39,8 @@ exec sp_Them_NgDung null,'Member',1,'son1247@gmail.com','0965000000','1989-01-09
 
 --o SP thứ hai thực hiện chèn dữ liệu vào bảng NHATRO 
 go
-alter proc sp_them_tro (@tenTro nvarchar(50),@idNgDung int,@idLoaiNha nvarchar(10),@idHinhThuc nvarchar(10),@soPhong tinyint,@dienTich float
-		   ,@idXaPhuong varchar(5),@diaChi nvarchar(150),@ngayDangTin date,@tinhTrang bit,@sdtTro char(10),@moTa nvarchar(200),@gia float)
+create proc sp_them_tro (@tenTro nvarchar(50),@idNgDung int,@idLoaiNha nvarchar(10),@idHinhThuc nvarchar(10),@soPhong tinyint,@dienTich float
+		   ,@gia float,@idXaPhuong varchar(5),@diaChi nvarchar(150),@ngayDangTin date,@tinhTrang bit,@sdtTro char(10),@moTa nvarchar(200))
 as
 begin
 	if @tenTro is null or @idNgDung is null or @idLoaiNha is null or @idHinhThuc is null or @soPhong is null or @dienTich is null or 
@@ -52,16 +52,16 @@ begin
 	else
 	begin
 		insert into Nha_tro 
-		values (@tenTro,@idNgDung,@idLoaiNha,@idHinhThuc,@soPhong,@dienTich,@idXaPhuong,@diaChi,@ngayDangTin,@tinhTrang,@sdtTro,@moTa,@gia);
+		values (@tenTro,@idNgDung,@idLoaiNha,@idHinhThuc,@soPhong,@dienTich,@gia,@idXaPhuong,@diaChi,@ngayDangTin,@tinhTrang,@sdtTro,@moTa);
 	end
 end
 
-exec sp_them_tro null,13,'TC','THANG',2,25,'001',N'01-Tôn Đức Thắng','2021-03-06',1,'0999111111',N'Gần Công Viên,Khu Mua Sắm',2000000
+exec sp_them_tro null,13,'TC','THANG',2,25,2000000,'001',N'01-Tôn Đức Thắng','2021-03-06',1,'0999111111',N'Gần Công Viên,Khu Mua Sắm'
 
 --o SP thứ ba thực hiện chèn dữ liệu vào bảng DANHGIA 
 
 go
-alter proc sp_them_danhGia (@idNgDung int,@idTro int,@danhGia bit, @comment nvarchar(150),@ip varchar(50),@sao tinyint)
+create proc sp_them_danhGia (@idNgDung int,@idTro int,@danhGia bit,@sao tinyint, @comment nvarchar(150),@ip varchar(50))
 as
 begin
 	if @idNgDung is null or @idTro  is null or @danhGia  is null or  @comment  is null or @ip  is null or @sao is null
@@ -71,11 +71,11 @@ begin
 	end
 	else
 	begin
-		insert into [dbo].[Danh_Gia] values (@idNgDung, @idTro, @danhGia,  @comment, @ip, @sao);
+		insert into [dbo].[Danh_Gia] values (@idNgDung, @idTro, @danhGia, @sao,  @comment, @ip);
 		print N'Thêm đánh giá thành công!'
 	end
 end
 
-exec sp_them_danhGia 16,21,1,N'Tốt','192.168.1.11',null
+exec sp_them_danhGia 16,21,1,null,N'Tốt','192.168.1.11'
 
 
