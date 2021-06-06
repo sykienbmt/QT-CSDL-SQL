@@ -22,6 +22,7 @@ begin
 	rollback transaction
 end
 
+insert into NHANVIEN values('nguyen','van','cong','111','2010-03-03','bmt','nam',10000,'005',4)
 --➢3 xóa công việc khi xóa đề án
 
 go
@@ -39,10 +40,10 @@ delete from DEAN where mada =1
 --➢4 cập nhật các nv đang làm cv của dean 1 chuyển qua dean 2 khi xóa dean 1
 go
 create trigger capnhat_dean on dean instead of delete as
-if exists(select mada from deleted where mada=1)
+if exists(select count(*) from deleted where mada=2)
 begin
-	update phancong set mada = 2 where mada = 1
-	delete CONGVIEC where mada = 1
+	update phancong set mada = 3 where mada = 2
+	delete CONGVIEC where mada = 2
 	delete from dean where mada = 1
 end
 
