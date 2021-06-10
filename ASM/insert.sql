@@ -43,6 +43,7 @@ insert into Goi_DangTin values (1,N'Không Giới Hạn',1000000000,1000000000)
 insert into Goi_DangTin values (2,N'100 Bài Đăng',5000000,100)
 insert into Goi_DangTin values (3,N'10 Bài Đăng',100000,10)
 insert into Goi_DangTin values (4,N'1 Bài Đăng',110000,1)
+insert into Goi_DangTin values (5,N'Free',0,1)
 
 --7
 insert into QL_GoiDang values (1,1,1000000000)
@@ -66,43 +67,18 @@ insert into HinhThucThue values ('QUY',N'Thuê Theo Quý')
 insert into HinhThucThue values ('NAM',N'Thuê Theo Năm')
 
 --10
-go
-create trigger insert_NhaTro on Nha_Tro for insert as
-begin
-	declare @id int,@luot int
-	select @id= idNgDung from inserted
-	select @luot =luotcon from QL_GoiDang where @id = idNgDung
-	if  exists (select idNgDung from QL_GoiDang where idNgDung=@id)
-	begin
-		if @luot=0
-		begin
-			print N'Đăng tin Thất bại lượt đăng tin còn 0 vui lòng mua thêm!'
-			rollback transaction
-		end
-		else
-		begin
-			update QL_GoiDang set luotCon = luotCon -1 where @id = idNgDung
-			set @luot = @luot -1
-			print N'Đăng tin Thành công!' 
-			print N'Người dùng'+cast(@id as char(3))+N' Còn ' + cast (@luot as char(9)) + N' Lượt đăng'
-		end
-	end
-	else
-	begin
-		print N'Người dùng  '+cast(@id as char(3))+N' không có quyền đăng tin vui lòng mua gói!'
-		rollback transaction
-	end
-end
+
 
 --update QL_GoiDang set luotCon =5 where idNgDung=13
 --delete from Nha_Tro
 
-insert into Nha_Tro values ('Ban Mai',3,'TC','THANG',2,25,2000000,'001',N'01-Tôn Đức Thắng','2021-03-06',1,'0999111111',N'Gần Công Viên,Khu Mua Sắm')
-insert into Nha_Tro values ('Penthouse',4,'TC','QUY',4,100,4000000,'002',N'03-Trần Cao Vân','2021-03-07',1,'0999222222',N'Có khu Thương mại, hồ bơi')
-insert into Nha_Tro values (N'Nhà Cao Cấp',5,'NR','NAM',3,120,3500000,'003',N'99-Lý Thái Tổ','2021-03-08',1,'0999333333',N'Thoáng mát vệ sinh sạch sẽ')
-insert into Nha_Tro values (N'Nhà Cao Cấp 2',5,'NR','NAM',2,60,3000000,'003',N'102-Lý Thái Tổ','2021-03-08',1,'0999333333',N'Thoáng mát vệ sinh sạch sẽ')
-insert into Nha_Tro values (N'Phòng Trọ Cao Cấp',6,'PTKK','THANG',1,50,1500000,'004',N'333-Trần Cao Vân','2021-03-08',1,'0999444444',N'Gần Công viên')
-insert into Nha_Tro values (N'Phòng Trọ Cao Cấp 2',6,'PTKK','THANG',1,80,1300000,'004',N'335-Trần Cao Vân','2021-03-08',1,'0999444444',N'Gần Công viên')
+insert into Nha_Tro values ('Ban Mai',3,'TC','THANG',2,25,2000000,'001',N'01-Tôn Đức Thắng','2021-03-06',1,'0999111111',N'Gần Công Viên,Khu Mua Sắm',default,'001')
+insert into Nha_Tro values ('Penthouse',4,'TC','QUY',4,100,4000000,'002',N'03-Trần Cao Vân','2021-03-07',1,'0999222222',N'Có khu Thương mại, hồ bơi',default,'002')
+insert into Nha_Tro values (N'Nhà Cao Cấp',5,'NR','NAM',3,120,3500000,'003',N'99-Lý Thái Tổ','2021-03-08',1,'0999333333',N'Thoáng mát vệ sinh sạch sẽ',default,'003')
+insert into Nha_Tro values (N'Nhà Cao Cấp 2',5,'NR','NAM',2,60,3000000,'003',N'102-Lý Thái Tổ','2021-03-08',1,'0999333333',N'Thoáng mát vệ sinh sạch sẽ',default,'004')
+insert into Nha_Tro values (N'Phòng Trọ Cao Cấp',6,'PTKK','THANG',1,50,1500000,'004',N'333-Trần Cao Vân','2021-03-08',1,'0999444444',N'Gần Công viên',default,'005')
+insert into Nha_Tro values (N'Phòng Trọ Cao Cấp 2',6,'PTKK','THANG',1,80,1300000,'004',N'335-Trần Cao Vân','2021-03-08',1,'0999444444',N'Gần Công viên',default,'006')
+insert into Nha_Tro values (N'Phòng Trọ Cao Cấp 2',6,'PTKK','THANG',1,80,1300000,'004',N'335-Trần Cao Vân','2021-03-08',1,'0999444444',N'Gần Công viên',default,'009')
 
 --11
 insert into Hinh_Tro values (1,'https://drive.google.com/anh99.jpg')
@@ -139,15 +115,35 @@ insert into CT_Tien_Nghi values (5,1,1,1)
 insert into CT_Tien_Nghi values (6,1,1,1)
 
 --14 
-insert into Danh_Gia values (1,1,1,5,N'Nhà trọ đẹp','192.168.1.1')
-insert into Danh_Gia values (2,1,1,4,N'Nhà trọ bt','192.168.1.7')
-insert into Danh_Gia values (2,2,0,1,N'Chán','192.168.1.6')
-insert into Danh_Gia values (3,3,0,3,N'Hơi nhỏ','192.168.1.9')
-insert into Danh_Gia values (4,4,1,5,N'Tốt','192.168.1.10')
-insert into Danh_Gia values (5,4,1,5,N'Tốt','192.168.1.11')
-insert into Danh_Gia values (6,5,0,3,N'Thiếu tiện nghi','192.168.1.99')
-insert into Danh_Gia values (6,6,1,4,N'Được','192.168.1.100')
+insert into Danh_Gia values (1,1,1,5,'192.168.1.1')
+insert into Danh_Gia values (2,1,1,4,'192.168.1.7')
+insert into Danh_Gia values (2,2,0,1,'192.168.1.6')
+insert into Danh_Gia values (3,3,0,3,'192.168.1.9')
+insert into Danh_Gia values (4,4,1,5,'192.168.1.10')
+insert into Danh_Gia values (5,4,1,5,'192.168.1.11')
+insert into Danh_Gia values (6,5,0,3,'192.168.1.99')
+insert into Danh_Gia values (6,6,1,4,'192.168.1.100')
 
-delete from Danh_Gia
+--15
+insert into Comment values (1,1,N'Rộng rãi thoáng mát','192.168.1.1')
+insert into Comment values (2,3,N'hơi nóng','192.168.1.2')
+insert into Comment values (2,5,N'Tốtt','192.168.1.5')
+insert into Comment values (3,6,N'Tệ','192.168.1.7')
+insert into Comment values (4,2,N'Thiếu tiện nghi','192.168.1.9')
+insert into Comment values (4,2,N'Rộng rãi thoáng mát','192.168.1.3')
+insert into Comment values (5,3,N'Nothing','192.168.2.1')
+insert into Comment values (1,2,N'Rộng rãi','192.168.1.1')
+
+--16
+insert into LS_Thue values (1,'2020-03-03','2020-06-06')
+insert into LS_Thue values (2,'2021-03-03','2021-06-07')
+insert into LS_Thue values (3,'2021-03-03','2021-06-06')
+
+delete from Ls_thue
+
+
+
+
+--delete from Danh_Gia
 
 

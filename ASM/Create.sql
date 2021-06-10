@@ -11,16 +11,18 @@ create table Tinh (
 --2
 create table Quan_Huyen(
 	idHuyen varchar(5) primary key,
-	tenHuyen varchar(20) not null,
+	tenHuyen nvarchar(20) not null,
 	idTinh varchar(5) not null foreign key references TINH
 )
+
 
 --3
 create table Xa_Phuong(
 	idXaPhuong varchar(5) primary key,
-	tenXaPhuong varchar(20) not null,
+	tenXaPhuong nvarchar(20) not null,
 	idHuyen varchar(5) not null foreign key references QUAN_HUYEN
 )
+
 
 --4
 create table Loai_NgDung(
@@ -82,9 +84,11 @@ create table Nha_Tro(
 	idXaPhuong varchar(5) not null foreign key references Xa_Phuong,
 	diaChi nvarchar(150) not null,
 	ngayDangTin date not null check (ngayDangTin <= getdate()),
-	tinhTrang bit not null,
+	tinhTrang bit default 1 not null,
 	sdtTro char(10) not null,
-	moTa nvarchar(200)
+	moTa nvarchar(200),
+	rate tinyint default null check (rate>=1 and rate <=5),
+	maTro varchar(5) default '001' not null 
 )
 
 --11
@@ -117,6 +121,10 @@ create table Danh_Gia (
 	ipAddress varchar(50) not null
 )
 
+--15
+create table comment (
+	
+)
 --drop table Danh_Gia
 --drop table CT_Tien_Nghi
 --drop table Tien_Nghi

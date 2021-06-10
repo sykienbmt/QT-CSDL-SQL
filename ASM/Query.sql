@@ -79,3 +79,50 @@ end
 exec sp_them_danhGia 16,21,1,null,N'Tốt','192.168.1.11'
 
 
+--2. Truy vấn thông tin
+--		a. Viết một SP với các tham số đầu vào phù hợp. SP thực hiện tìm kiếm thông tin các
+--		   phòng trọ thỏa mãn điều kiện tìm kiếm theo: Quận, phạm vi diện tích, phạm vi ngày đăng
+--		   tin, khoảng giá tiền, loại hình nhà trọ.
+--		   SP này trả về thông tin các phòng trọ, gồm các cột có định dạng sau:
+--		o Cột thứ nhất: có định dạng ‘Cho thuê phòng trọ tại’ + <Địa chỉ phòng trọ>
+--		  + <Tên quận/Huyện>
+--		o Cột thứ hai: Hiển thị diện tích phòng trọ dưới định dạng số theo chuẩn Việt Nam +
+--		  m2. Ví dụ 30,5 m2
+--		o Cột thứ ba: Hiển thị thông tin giá phòng dưới định dạng số theo định dạng chuẩn
+--		  Việt Nam. Ví dụ 1.700.000
+--		o Cột thứ tư: Hiển thị thông tin mô tả của phòng trọ
+--		o Cột thứ năm: Hiển thị ngày đăng tin dưới định dạng chuẩn Việt Nam.
+--		  Ví dụ: 27-02-2012
+--		o Cột thứ sáu: Hiển thị thông tin người liên hệ dưới định dạng sau:
+--		▪ Nếu giới tính là Nam. Hiển thị: A. + tên người liên hệ. Ví dụ A. Thắng
+--		▪ Nếu giới tính là Nữ. Hiển thị: C. + tên người liên hệ. Ví dụ C. Lan
+--		o Cột thứ bảy: Số điện thoại liên hệ
+--		o Cột thứ tám: Địa chỉ người liên hệ
+---			Viết hai lời gọi cho SP này
+
+
+go
+alter proc sp_Tim_Tro @diachi nvarchar(50) = '%',@dienTichMin float = null,@dienTichmax float = null,@ngayDangTin date = null,
+					@ngayDangTinend date = null,@giaTienMin float =null,@giaTienMax float = null,@loaiHinhTro nvarchar(10) = '%'
+as
+begin
+select N'Cho thuê phòng trọ tại '+nt.diaChi +' - '+ x.tenXaPhuong+' - '+qh.tenHuyen+' - '+t.tenTinh 'Địa chỉ'
+,format(dienTich,'N','vi-VN') N'Diện Tích',
+format(gia,'N','vi-VN') N'Giá phòng',moTa N'Mô tả',convert(varchar,nt.ngayDangTin,105) N'Ngày Đăng Tin',
+iif(nd.gioiTinh=1,'Anh '+ nd.tenNgDung,N'Chị '+ nd.tenNgDung) N'Liên lạc',nt.sdtTro N'SỐ đt liên hệ',
+nd.diaChi +' - '+ x.tenXaPhuong+' - '+qh.tenHuyen+' - '+t.tenTinh 'Đ/c Liên hệ'
+from Nha_Tro nt join Xa_Phuong x on nt.idXaPhuong=x.idXaPhuong
+join Quan_Huyen qh on x.idHuyen= qh.idHuyen
+join Tinh t on t.idTinh = qh.idTinh
+join Nguoi_Dung nd on nd.idNgDung=nt.idNgDung
+where @dienTichMin <=nt.dienTich and nt.dienTich<=@dienTichmax and @ngayDangTin<=nt.ngayDangTin and nt.ngayDangTin<=@ngayDangTinend
+and @giaTienMin<= nt.gia and nt.gia<=@giaTienMax
+end
+
+exec sp_Tim_Tro '',0,1000,'2021-03-03','2021-03-07',0,5000000,''
+
+
+--b. Viết một hàm có các tham số đầu vào tương ứng với tất cả các cột của bảng
+--NGUOIDUNG. Hàm này trả về mã người dùng (giá trị của cột khóa chính của bảng
+--NGUOIDUNG) thỏa mãn các giá trị được truyền vào tham số.
+
